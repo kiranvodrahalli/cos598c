@@ -1,0 +1,13 @@
+1. Make LaTeX file with problem writeup.
+2. Implement step by step instructions with guided intent. 
+3. Q1: Localization
+       a) First, for every image in the directory, draw the object proposals on the images. (point: visualize the text)
+			 b) Second, implement the proposal combination algorithm given in the Overfeat paper. Draw results and check sense.
+			 c) Third, implement K-means clustering on the centroids of the proposals and resulting bounds boxes. Evaluate. 
+			 d) Fourth, come up with your own idea for a proposal combination algorithm and see if you can improve results.
+			 d2) Implement a Hebbian Competitive Learner that learns the bounding boxes with competition learning. Compete on x1, x2, y1, y2
+			 e) Fifth (if time), implement an RNN which does this process after training
+4. Q2: Implement Canny Edge Detection
+5. Write up email to send to Andrea + Mark specifying direction/goals
+6. Incorporate Yanchen code into LaTeX problem file. 
+6. Incorporate Solutions in one file, and Starter Code in other file.
