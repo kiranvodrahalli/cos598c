@@ -1,6 +1,7 @@
 1. Make LaTeX file with problem writeup.
 2. Implement step by step instructions with guided intent. 
-3. Q1: Localization
+3. Q1: Localization with a Different Dataset
+			 0) Either 1) Use Overfeat code to generate a bunch of proposals for various images; 2) Use Sun09 proposals.
        a) First, for every image in the directory, draw the object proposals on the images. (point: visualize the text)
 			 b) Second, implement the proposal combination algorithm given in the Overfeat paper. Draw results and check sense.
 			 c) Third, implement K-means clustering on the centroids of the proposals and resulting bounds boxes. Evaluate. 
