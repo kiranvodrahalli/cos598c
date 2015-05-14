@@ -1,0 +1,158 @@
+% Use this template to write your solutions
+\documentclass[12pt]{article}
+\usepackage{fancyhdr}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{relsize}
+\usepackage{graphicx}
+\graphicspath{ {images/} }
+
+\usepackage[usenames,dvipsnames]{color} % Required for specifying custom colors and referring to colors by name
+\usepackage[pdftex]{hyperref} % For hyperlinks in the PDF
+\hypersetup{
+  colorlinks=true,
+  linkcolor=MyBlue, 
+  citecolor=MyRed,
+  urlcolor= MyBlue
+}
+
+\definecolor{MyRed}{rgb}{0.99, 0.0, 0.0} 
+\definecolor{MyGreen}{rgb}{0.0,0.4,0.0} 
+\definecolor{MyBlue}{rgb}{0.0, 0.0, 0.6}
+
+
+
+% Set the margins
+%
+\setlength{\textheight}{8.5in}
+\setlength{\headheight}{.2in}
+\setlength{\headsep}{.25in}
+\setlength{\topmargin}{0in}
+\setlength{\textwidth}{6.5in}
+\setlength{\oddsidemargin}{0in}
+\setlength{\evensidemargin}{0in}
+
+
+
+% Macros
+\newcommand{\myN}{\hbox{N\hspace*{-.9em}I\hspace*{.4em}}}
+\newcommand{\myZ}{\hbox{Z}^+}
+\newcommand{\myR}{\hbox{R}}
+\newcommand{\txt}[1]
+{\textnormal{#1}}
+
+\newcommand{\prob}[1]
+{\textbf{P}\{{#1}\}}
+
+\newcommand{\E}[1]
+{\textbf{E}[{#1}]}
+
+\newcommand{\mi}[1]
+{\txt{min}_{#1}}
+
+\newcommand{\ma}[1]
+{\txt{max}_{#1}}
+
+\newcommand{\myfunction}[3]
+{${#1} : {#2} \rightarrow {#3}$ }
+
+\newcommand{\myzrfunction}[1]
+{\myfunction{#1}{{\myZ}}{{\myR}}}
+
+% changing lists to (a), (b), (c) instead of 1. 2. 3. 
+\renewcommand{\labelenumi}{(\alph{enumi})}
+
+% Formating Macros
+
+\newcommand{\myheader}[2]
+{\vspace*{-0.5in}
+\noindent
+{#1} 
+
+\noindent
+{#2} 
+\noindent
+}  % end \myheader 
+
+\newcommand{\courseheader}
+{
+\bf{COS 598C Spring 2015}
+}
+
+\newcommand{\authorheader}
+{
+Kiran Vodrahalli and Yanchen Wang
+}
+
+% Running head (goes at top of each page, beginning with page 2.
+% Must precede by \pagestyle{myheadings}.
+\newcommand{\myrunninghead}[2]
+{\markright{{\bf{#1}: \txt{#2}}}}
+
+\newcommand{\kiranhead}
+{
+ \lhead{\courseheader}
+ \rhead{\authorheader}
+}
+
+
+\newcommand{\mytitle}[1]
+{\begin{center}
+{\large {\bf {#1}}}
+\end{center}}
+
+\newcommand{\probnum}[1]
+{\large {\bf Problem {#1}}}
+
+\newcommand{\mysection}[1]
+{\noindent {\bf {#1}}}
+
+%%%%%% Begin document with header and title %%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\begin{document}
+\pagestyle{fancy}
+
+\kiranhead
+
+\probnum{1}
+\begin{enumerate}
+
+\item 
+
+\item Implement the greedy merge algorithm for the proposed bounding boxes, as described on pages $10-11$ of the \href{http://arxiv.org/pdf/1312.6229v4.pdf}{Overfeat paper}.
+
+\item
+
+\item
+
+\item
+
+\end{enumerate}
+
+\probnum{2}
+
+\begin{enumerate}
+
+\item
+
+\item
+
+\item
+
+\end{enumerate}
+
+\probnum{3}
+
+\begin{enumerate}
+
+\item
+
+\item
+
+\item
+
+\end{enumerate}
+
+
+\end{document}
