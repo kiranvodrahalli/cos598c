@@ -5,6 +5,7 @@
 \usepackage{amssymb}
 \usepackage{relsize}
 \usepackage{graphicx}
+\usepackage[utf8]{inputenc}
 \graphicspath{ {images/} }
 
 \usepackage{courier}
@@ -117,6 +118,10 @@ Kiran Vodrahalli and Yanchen Wang
 
 \kiranhead
 
+[Primary Pedagogical Value: The main takeaway of this assignment is the idea that checking results from papers through your own implementation is a great skill to have. Acquiring the data and writing the code can be time-consuming, but if you research in the area, it can be worth it to check the facts stated in papers yourself. Secondarily, it is always important to compare more complicated methods suggested in papers to simpler, classical approaches, or at least have the knowledge that they do not work for a specific problem. This reason is why we include tasks involving $k$-means clustering and Canny edge detection on the problem set. The theme of this problem set can therefore be summarized as ``Neural Nets vs. Classical Methods".]
+
+\vspace{0.5in}
+
 \probnum{1}
 
 The goal in this problem will be to explore methods of combining bounding box proposals to classify objects and form predictions about where they are located in a picture. We will be using the Overfeat paper as well as the SUN09 dataset. A set of images from the SUN09 dataset has been provided in your starter code. 
@@ -144,25 +149,32 @@ Then, for each image, plot the bounding box proposals on top of the image. Use a
 
 \probnum{2}
 
+The task will focus on the segmentation task from \href{http://people.idsia.ch/~juergen/nips2012.pdf}{Ciresan, Giusti, Gambardella, and Schmidhuber}. We use the \href{http://brainiac2.mit.edu/isbi_challenge/content/isbi-2012-workshop-results}{ISBI $2012$ Challenge Data} as training data.
+
 \begin{enumerate}
 
-\item
+\item The paper defines several convolutional neural networks to learn segmentations of neurons. This part of the question requires you to implement the N$4$ network from pg. $6$ in code. Specifically, please use the \href{http://deeplearning.net/software/theano/}{\texttt{theano}} Python module. You may find it helpful to use \href{http://lasagne.readthedocs.org/en/latest/}{\texttt{lasagne}} module, which is built on top of \texttt{theano}. 
 
-\item
+[Justification for the problem: As in Question $1$, researchers should have the skill to implement software specifications given in papers. Since the course is focused on neural nets, it follows that any student completing the course should be able to implement in code a neural net architecture they come across in a paper to evaluate for themselves. It is also important to be able to replicate the test metrics used in the problem.]
 
-\item
+\item Evaluate the pixel error and the rand error defined in the paper for the dataset. 
+
+[Justification for the problem: It is important to be able to implement metrics given in the paper, and to evaluate them on the data presented in the paper to check figures.]
 
 \end{enumerate}
 
+
 \probnum{3}
+
+This problem is in some ways a continuation of Problem $2$. The task is to first implement and then apply the Canny edge detector to the ISBI $2012$ dataset, and to compare its performance to the neural net implemented in part $(a)$. We now walk through the implementation of a Canny edge dector in Python.
 
 \begin{enumerate}
 
-\item
+\item Implement Gaussian filter. 
 
-\item
+\item Implement blahblah. 
 
-\item
+\item Compare results to the neural net from Problem $2(a)$ using the metrics in Problem $2(b)$. 
 
 \end{enumerate}
 
