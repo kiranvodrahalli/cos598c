@@ -116,9 +116,16 @@ Kiran Vodrahalli and Yanchen Wang
 \kiranhead
 
 \probnum{1}
+
+The goal in this problem will be to explore methods of combining bounding box proposals to classify objects and form predictions about where they are located in a picture. We will be using the Overfeat paper as well as the SUN09 dataset. A set of images from the SUN09 dataset has been provided in your starter code. 
+
 \begin{enumerate}
 
-\item 
+\item First, download a set of object proposals from \href{http://people.csail.mit.edu/myungjin/HContext.html}{$\txt{HContext.html}$}: You will need the \href{http://groups.csail.mit.edu/vision/Hcontext/data/detectorOutputsText.tar.gz}{detectorOutputsText.tar.gz} file. First you will need to gzip and untar the folders. These files are organized into two folders, \textsc{train} and \textsc{test}, each with subdirectories each specifying an object. Each of these object directories contains many .txt files named after the image to which the object belongs. Each line in the file contains bounding box locations and scores for that image in the format $[x_1 \txt{ } y_1 \txt{ } x_2 \txt{ } y_2 \textsc{ score}]$. 
+
+Your first task is to write a Python script transform this directory into a directory that instead contains a directory for each image in the image set provided, with a set of files for each image containing bounding box information. These files should be labeled $\{\txt{object name}\}$.txt. Note: The \textsc{os} module is necessary for this task. Another useful module may be the \textsc{shutil} module.
+
+[Justification for the problem: Sometimes in research and data analysis, datasets are not provided in a nice format and we have to reformat them. Learning how to use useful tools like Python for this sort of task is a useful skill for any researcher who works with data.]
 
 \item Implement the greedy merge algorithm for the proposed bounding boxes, as described on pages $10-11$ of the \href{http://arxiv.org/pdf/1312.6229v4.pdf}{Overfeat paper}.
 
