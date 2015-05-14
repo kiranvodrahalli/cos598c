@@ -58,14 +58,14 @@ def overlap_box(box1, box2):
 def overlap_score(box1, box2):
 	return 0
 # Euclidean distance between centroids
-def centroid_dist(self, box2):
-	c1 = self.centroid()
+def centroid_dist(box1, box2):
+	c1 = box1.centroid()
 	c2 = box2.centroid()
 	return sqrt((c1[0] - c2[0])**2 + (c1[1] - c2[1])**2)
 # box1 and box2 are boxes
 # take averages of each coordinate
 # the new score is the sum is calculated 
-def merge_boxes(box1, box2, new_score):
+def merge_boxes(box1, box2):
 	x1 = avg(box1.x1, box2.x1)
 	x2 = avg(box1.x2, box2.x2)
 	y1 = avg(box1.y1, box2.y1)
@@ -131,7 +131,8 @@ print colorname_map
 # class_set specifies which classes are to be drawn.
 # threshold marks the minimum score a bounding box must have to be drawn.
 # it should be > 0. 
-def draw_boxes(box_dict, img_name, class_set, threshold):
+# combiner_name is either empty string (base case), "greedy", or "kmeans"
+def draw_boxes(box_dict, img_name, class_set, threshold, combiner_name):
 	img_path = img_dir + img_name + ".jpg"
 	show = True
 	classes_shown = set()
@@ -167,7 +168,7 @@ def draw_boxes(box_dict, img_name, class_set, threshold):
 			if not os.path.exists(dump_dir):
 				print "Making directory " + dump_dir
 				os.makedirs(dump_dir)
-			im.save(open(dump_dir + "mod_" + img_name + "_" + str(threshold) + ".jpg", "wb"), "JPEG")
+			im.save(open(dump_dir + "mod_" + img_name + "_" + combiner_name + "_" + str(threshold) + ".jpg", "wb"), "JPEG")
 	print "num classes relevant: " + str(len(classes_shown))
 	print classes_shown
 
