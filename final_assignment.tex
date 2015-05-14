@@ -6,7 +6,7 @@
 \usepackage{relsize}
 \usepackage{graphicx}
 \usepackage[utf8]{inputenc}
-\graphicspath{ {images/} }
+\graphicspath{ {figures/} }
 
 \usepackage{courier}
 
@@ -128,11 +128,12 @@ The goal in this problem will be to explore methods of combining bounding box pr
 
 \begin{enumerate}
 
-\item First, download a set of object proposals from \href{http://people.csail.mit.edu/myungjin/HContext.html}{$\txt{HContext.html}$}: You will need the \href{http://groups.csail.mit.edu/vision/Hcontext/data/detectorOutputsText.tar.gz}{detectorOutputsText.tar.gz} file. First you will need to gzip and untar the folders. These files are organized into two folders, \texttt{train} and \texttt{test}, each with subdirectories each specifying an object. Each of these object directories contains many .txt files named after the image to which the object belongs. Each line in the file contains bounding box locations and scores for that image in the format $[x_1 \txt{ } y_1 \txt{ } x_2 \txt{ } y_2 $\texttt{ score}$]$. 
+\item First, download a set of object proposals from \href{http://people.csail.mit.edu/myungjin/HContext.html}{$\txt{HContext.html}$}: You will need the \href{http://groups.csail.mit.edu/vision/Hcontext/data/detectorOutputsText.tar.gz}{detectorOutputsText.tar.gz} file. First you will need to gzip and untar the folders. These files are organized into two folders, \texttt{train} and \texttt{test}, each with subdirectories each specifying an object. Each of these object directories contains many .txt files named after the image to which the object belongs. Each line in the file contains bounding box locations and scores for that image in the format $[x_1 \txt{ } y_1 \txt{ } x_2 \txt{ } y_2 $\texttt{ score}$]$. Please apply the \texttt{exp} function to the scores so that all scores are positive. 
 
-Your first task is to write a Python script transform this directory into a directory that instead contains a directory for each image in the image set provided, with a set of files for each image containing bounding box information. These files should be labeled $\{$\texttt{object name}$\}$.txt. Note: The \texttt{os} module is necessary for this task. Another useful module may be the \texttt{shutil} module.
+Your first task is to write a Python script transform this directory into a directory that instead contains a directory for each image in the image set provided, with a set of files for each image containing bounding box information. These files should be labeled $\{$\texttt{object name}$\}$.txt. Note: The \texttt{os} module is necessary for this task. Another useful module may be the \texttt{shutil} module. For drawing, you may want to use the \texttt{Image} and \texttt{ImageDraw} submodules from the \texttt{PIL} module.
 
-Then, for each image, plot the bounding box proposals on top of the image. Use a different color for each bounding box, and symbolize the confidence by varying the thickness of the lines the box is drawn with. (Include a legend specifying which color pertains to which category.)
+Then, for each image, plot all bounding box proposals on top of the image for the following classes: \texttt{chair, books, wall, clock,} \texttt{door, drawer, shelves,} 
+\texttt{television,} \texttt{window} (we restrict the set of object classes to plot so that it is reasonable to display a small number). Use a different color for each class you plot, and symbolize the confidence by varying the thickness of the lines the box is drawn with. (Include a legend specifying which color pertains to which category.) Use a different picture for each object class. 
 
 [Justification for the problem: Sometimes in research and data analysis, datasets are not provided in a nice format and we have to reformat them. Learning how to use useful tools like Python for this sort of task is a useful skill for any researcher who works with data. The visualization portion of the task is important as well for conceptualizing the task individually.]
 
@@ -149,9 +150,21 @@ Then, for each image, plot the bounding box proposals on top of the image. Use a
 
 \probnum{2}
 
-The task will focus on the segmentation task from \href{http://people.idsia.ch/~juergen/nips2012.pdf}{Ciresan, Giusti, Gambardella, and Schmidhuber}. We use the \href{http://brainiac2.mit.edu/isbi_challenge/content/isbi-2012-workshop-results}{ISBI $2012$ Challenge Data} as training data.
+The task will focus on the segmentation task from \href{http://people.idsia.ch/~juergen/nips2012.pdf}{Ciresan, Giusti, Gambardella, and Schmidhuber}. We use the ISBI $2012$ Challenge Data dataset.
 
 \begin{enumerate}
+
+\item First, download the dataset. The ISBI $2012$ Challenge data are downloadable from \href{http://brainiac2.mit.edu/isbi_challenge/home}{$\txt{http://brainiac2.mit.edu/isbi\_challenge/home}$}. After registering an account, you can download the data from the ``Downloads" section. The images are all in \texttt{.tif} format, of dimension $512 \times 512$ pixels. Three sample images from the dataset are presented in \autoref{fig:trainlabeltest}. 
+\begin{figure}
+\includegraphics[scale=0.2]{trainvolume}
+\includegraphics[scale=0.2]{trainlabels}
+\includegraphics[scale=0.2]{testvolume}
+\centering
+\caption{A training image, the associated label, and a test image.}
+\label{fig:trainlabeltest}
+\end{figure}
+
+In fact, we had difficulty downloading the data set because the website indicated we were robots, not humans. Perhaps future TAs for this course can simply directly give the students this data set because some students may experience the same bug.
 
 \item The paper defines several convolutional neural networks to learn segmentations of neurons. This part of the question requires you to implement the N$4$ network from pg. $6$ in code. Specifically, please use the \href{http://deeplearning.net/software/theano/}{\texttt{theano}} Python module. You may find it helpful to use \href{http://lasagne.readthedocs.org/en/latest/}{\texttt{lasagne}} module, which is built on top of \texttt{theano}. 
 
