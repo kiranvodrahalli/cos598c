@@ -16,7 +16,7 @@ new_imgs = "/Users/kiranv/college/3junior-year/spring2015/cos598c/project/mod_im
 
 def avg(a, b):
 	return (a + b + 0.)/2.
-
+#--------------------------------------------------------------------#
 # THE BOX CLASS
 # assume x1 < x2, y1 < y2 - they are diagonals
 class box:
@@ -36,42 +36,43 @@ class box:
 			if (pt[1] <= self.y2 and pt[1] >= self.y1) or (pt[1] >= self.y2 and pt[1] <= self.y1):
 				return True
 		return False
-	# uses the x1< x2, y1< y2 assumption
-	# need to fix this because box2 could be before box1.... move outside of class
-	def overlap_area(self, box2):
-		if box2.x1 > self.x2 or box2.y1 > self.y2:
-			return 0.
-		return (self.x2 - box2.x1)*(self.y2 - box2.y1)
-	# returns the overlapping box between the two
-	def overlap_box(self, box2):
-		return None
-	# returns the overlap score metric # used to merge boxes
-	def overlap_score(self, box2):
-		return 0
 	def centroid(self):
 		return (avg(self.x1, self.x2), avg(self.y1, self.y2))
-	# Euclidean distance between centroids
-	def centroid_dist(self, box2):
-		c1 = self.centroid()
-		c2 = box2.centroid()
-		return sqrt((c1[0] - c2[0])**2 + (c1[1] - c2[1])**2)
 
 # perhaps there should be a discount based on Jaccard similarity or something..we just use sums a la Overfeat.
 # even though in Overfeat, they might not have been dealing with this exact score. 
-
+#--------------------------------------------------------------------#
 # SOME HELPER METHODS FOR ACTIONS ON TWO BOXES.
+
+# uses the x1< x2, y1< y2 assumption
+# need to fix this because box2 could be before box1.... move outside of class
+def overlap_area(box1, box2):
+	if box2.x1 > box1.x2 or box2.y1 > box1.y2:
+		return 0.
+	return (self.x2 - box2.x1)*(self.y2 - box2.y1)
+# returns the overlapping box between the two
+def overlap_box(box1, box2):
+	return None
+# returns the overlap score metric # used to merge boxes
+def overlap_score(box1, box2):
+	return 0
+# Euclidean distance between centroids
+def centroid_dist(self, box2):
+	c1 = self.centroid()
+	c2 = box2.centroid()
+	return sqrt((c1[0] - c2[0])**2 + (c1[1] - c2[1])**2)
 # box1 and box2 are boxes
 # take averages of each coordinate
-# new_score is calculated 
+# the new score is the sum is calculated 
 def merge_boxes(box1, box2, new_score):
 	x1 = avg(box1.x1, box2.x1)
 	x2 = avg(box1.x2, box2.x2)
 	y1 = avg(box1.y1, box2.y1)
 	y2 = avg(box1.y2, box2.y2)
-	score = new_score
+	score = box1.score + box2.score # sum, as described in the paper
 	return box(x1, y1, x2, y2, score)
 
-
+#--------------------------------------------------------------------#
 # PARSING THE OBJECT FILES TO DRAW BOXES ON IMAGES
 
 # returns a dict from class name to list of boxes. 
@@ -177,14 +178,16 @@ def boxes_on_pics():
 		for img in files:
 			img_name = img.split(".jpg")[0]
 			box_dict = gen_boxes(img_name)
-			# here insert a function that transforms box_dict into merged_box_dict (i.e. after merging)
+			# here insert the function that transforms box_dict into merged_box_dict (i.e. after merging)
+			#box_dict = merged_box_dict(box_dict)
 			draw_boxes(box_dict, img_name, set([]), 0.2)
 
+#--------------------------------------------------------------------#
 # takes in a box_dict and for each class, merges object windows together
 # THIS IS THE IMPLEMENTATION OF THE ALGORITHM FOR PART 2
 def merged_box_dict(box_dict):
-	# not implemented
-	return dict()
+	new_dict = dict()
+	
 
 
 
