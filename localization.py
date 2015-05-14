@@ -1,4 +1,4 @@
-# This file contains more functions for solving problems 1.2 and 1.3. 
+# This file contains more functions for solving problems 2.2 and 2.3. 
 
 import os
 import sys
@@ -187,7 +187,7 @@ def boxes_on_pics():
 # THIS IS THE IMPLEMENTATION OF THE ALGORITHM FOR PART 2
 def merged_box_dict(box_dict):
 	new_dict = dict()
-	
+
 
 
 

@@ -1,5 +1,5 @@
 # This file contains methods to reverse the file setup, as described
-# in problem 1.1
+# in problem 2.1
 
 import os
 from shutil import copyfile
