@@ -6,6 +6,7 @@ from math import sqrt
 from math import exp
 from PIL import Image 
 from PIL import ImageDraw
+from scipy.cluster.vq import whiten, kmeans
 
 
 train_dir = "/Users/kiranv/college/3junior-year/spring2015/cos598c/project/train/"
@@ -173,22 +174,42 @@ def draw_boxes(box_dict, img_name, class_set, threshold):
 
 # generate all pictures redrawn with the appropriate boxes
 # dumps these in the folder "mod_images" - check that to see the results. 
-def boxes_on_pics():
+# combiner is a function that somehow reduces the set of box proposals into only a few boxes.
+# the "combiner methods" are defined below (this is essentially the last part of Q2 and Q3)
+def boxes_on_pics(combiner):
 	for root, dirs, files in os.walk(img_dir):
 		for img in files:
 			img_name = img.split(".jpg")[0]
 			box_dict = gen_boxes(img_name)
 			# here insert the function that transforms box_dict into merged_box_dict (i.e. after merging)
-			#box_dict = merged_box_dict(box_dict)
+			box_dict = combiner(box_dict)
 			draw_boxes(box_dict, img_name, set([]), 0.2)
 
+
+#================================================================================================
+# COMBINERS
+# FOR THE FOLLOWING TWO FUNCTIONS, TO GET THE IMAGES, SIMPLY CALL
+# >> boxes_on_pics(merged_box_dict)
+# OR
+# >> boxes_on_pics(apply_kmeans)
 #--------------------------------------------------------------------#
 # takes in a box_dict and for each class, merges object windows together
-# THIS IS THE IMPLEMENTATION OF THE ALGORITHM FOR PART 2
+# THIS IS THE IMPLEMENTATION OF THE ALGORITHM IN QUESTION 2
 def merged_box_dict(box_dict):
-	new_dict = dict()
+	# for every object class in the box_dict
+	#    reduce the list of boxes to the merged boxes using paper's greedy algorithm
+	# return the new merged dictionary
+	merged_dict = dict()
+	return merged_dict
 
 
-
+#--------------------------------------------------------------------#
+# this is the implementation of K-means for QUESTION 3
+def apply_kmeans(box_dict):
+	# for every object class in the box_dict
+	#     reduce the list of boxes to the clustered boxes with kmeans
+	# return the new dictionary
+	kmeans_dict = dict()
+	return kmeans_dict
 
 
