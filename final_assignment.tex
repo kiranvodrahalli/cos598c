@@ -5,6 +5,7 @@
 \usepackage{amssymb}
 \usepackage{relsize}
 \usepackage{graphicx}
+\usepackage{placeins}
 \usepackage[utf8]{inputenc}
 \graphicspath{ {figures/} }
 
@@ -120,20 +121,41 @@ Kiran Vodrahalli and Yanchen Wang
 
 [Primary Pedagogical Value: The main takeaway of this assignment is the idea that checking results from papers through your own implementation is a great skill to have. Acquiring the data and writing the code can be time-consuming, but if you research in the area, it can be worth it to check the facts stated in papers yourself. Secondarily, it is always important to compare more complicated methods suggested in papers to simpler, classical approaches, or at least have the knowledge that they do not work for a specific problem. This reason is why we include tasks involving $k$-means clustering and Canny edge detection on the problem set. The theme of this problem set can therefore be summarized as ``Neural Nets vs. Classical Methods".]
 
-\vspace{0.5in}
+\vspace{0.2in}
+
 
 \probnum{1}
+
+In this problem, you will download the Overfeat code and run it on the sample images provided to see how it performs. This is more of a fun task! We encourage you to find your own images and run Overfeat on them. Try to find examples for which Overfeat fails. 
+
+The Overfeat code in Python is available here: 
+
+\href{https://github.com/sermanet/OverFeat/blob/master/API/python/sample.py}{$\txt{https://github.com/sermanet/OverFeat/blob/master/API/python/sample.py}$}. 
+
+\bigskip
+[Justification for the problem: Since the full code is available, you might as well play with it! It is good to get an idea for how it performs on random images anyways.]
+
+\bigskip
+\probnum{2}
 
 The goal in this problem will be to explore methods of combining bounding box proposals to classify objects and form predictions about where they are located in a picture. We will be using the Overfeat paper as well as the SUN09 dataset. A set of images from the SUN09 dataset has been provided in your starter code. 
 
 \begin{enumerate}
 
-\item First, download a set of object proposals from \href{http://people.csail.mit.edu/myungjin/HContext.html}{$\txt{HContext.html}$}: You will need the \href{http://groups.csail.mit.edu/vision/Hcontext/data/detectorOutputsText.tar.gz}{detectorOutputsText.tar.gz} file. First you will need to gzip and untar the folders. These files are organized into two folders, \texttt{train} and \texttt{test}, each with subdirectories each specifying an object. Each of these object directories contains many .txt files named after the image to which the object belongs. Each line in the file contains bounding box locations and scores for that image in the format $[x_1 \txt{ } y_1 \txt{ } x_2 \txt{ } y_2 $\texttt{ score}$]$. Please apply the \texttt{exp} function to the scores so that all scores are positive. 
+\item First, download a set of object proposals from \href{http://people.csail.mit.edu/myungjin/HContext.html}{$\txt{HContext.html}$}: You will need the \href{http://groups.csail.mit.edu/vision/Hcontext/data/detectorOutputsText.tar.gz}{detectorOutputsText.tar.gz} file. First you will need to gzip and untar the folders. These files are organized into two folders, \texttt{train} and \texttt{test}, each with subdirectories each specifying an object. Each of these object directories contains many \texttt{.txt} files named after the image to which the object belongs. Each line in the file contains bounding box locations and scores for that image in the format $[x_1 \txt{ } y_1 \txt{ } x_2 \txt{ } y_2 $\texttt{ score}$]$. Please apply the \texttt{exp} function to the scores so that all scores are positive. 
 
 Your first task is to write a Python script transform this directory into a directory that instead contains a directory for each image in the image set provided, with a set of files for each image containing bounding box information. These files should be labeled $\{$\texttt{object name}$\}$.txt. Note: The \texttt{os} module is necessary for this task. Another useful module may be the \texttt{shutil} module. For drawing, you may want to use the \texttt{Image} and \texttt{ImageDraw} submodules from the \texttt{PIL} module.
 
 Then, for each image, plot all bounding box proposals on top of the image for the following classes: \texttt{chair, books, wall, clock,} \texttt{door, drawer, shelves,} 
-\texttt{television,} \texttt{window} (we restrict the set of object classes to plot so that it is reasonable to display a small number). Use a different color for each class you plot, and symbolize the confidence by varying the thickness of the lines the box is drawn with. (Include a legend specifying which color pertains to which category.) Use a different picture for each object class. 
+\texttt{television,} \texttt{window} (we restrict the set of object classes to plot so that it is reasonable to display a small number). Use a different color for each class you plot, and symbolize the confidence by varying the thickness of the lines the box is drawn with. (Include a legend specifying which color pertains to which category.) Use a different picture for each object class. An example of what the bounding boxes should look like is given for the example of \texttt{books} in \autoref{fig:boundingboxes}.
+
+\begin{figure}
+\includegraphics[scale=0.08]{mod_o_office_img_0011}
+\includegraphics[scale=0.08]{mod_o_office_IMG_1533}
+\centering
+\caption{Pink bounding box proposals for the object class \texttt{books} for two images of offices}
+\label{fig:boundingboxes}
+\end{figure}
 
 [Justification for the problem: Sometimes in research and data analysis, datasets are not provided in a nice format and we have to reformat them. Learning how to use useful tools like Python for this sort of task is a useful skill for any researcher who works with data. The visualization portion of the task is important as well for conceptualizing the task individually.]
 
@@ -141,14 +163,19 @@ Then, for each image, plot all bounding box proposals on top of the image for th
 
 [Justification for the problem: It is important to be able to read a paper and implement algorithms from a simple, sometimes incomplete description and evaluate it for yourself. This question is a simple exercise in implementing a simple algorithm where some information was left out, requiring the reader of the paper to think about and fill in the gaps. ]
 
-\item The task will be to perform an experiment to see how well a common clustering algorithm can distinguish object classes based on bounding boxes. You will apply $k$-means clustering on each object class of bounding boxes for an image as a replacement to the method defined in the Overfeat paper. Think carefully about how to define a vector for each bounding box: recall that $k$-means minimizes distortion, or the sum of the squared Euclidean distances between each bounding box vector and the centroid it is closest to. A na{\"i}ve approach would simply specify each bounding box as a $4$-tuple $(x_1, y_1, x_2, y_2)$. What distance are we trying to minimize between bounding boxes? You might use the approach from part $(b)$ as inspiration. Feel free to choose the number of dimensions in your representation. Give justification for your bounding box representation. You may find the Python module \href{http://docs.scipy.org/doc/scipy/reference/cluster.vq.html}{\texttt{scipy.cluster.vq}} useful (do not implement your own version of $k$-means). Don't forget to draw the resulting clustered bounding boxes on the images!
+\end{enumerate}
+
+\probnum{3}
+
+The task will be to perform an experiment to see how well a common clustering algorithm can distinguish object classes based on bounding boxes. You will apply $k$-means clustering on each object class of bounding boxes for an image as a replacement to the method defined in the Overfeat paper. Think carefully about how to define a vector for each bounding box: recall that $k$-means minimizes distortion, or the sum of the squared Euclidean distances between each bounding box vector and the centroid it is closest to. A na{\"i}ve approach would simply specify each bounding box as a $4$-tuple $(x_1, y_1, x_2, y_2)$. What distance are we trying to minimize between bounding boxes? You might use the approach from part $(b)$ as inspiration. Feel free to choose the number of dimensions in your representation. Give justification for your bounding box representation. You may find the Python module \href{http://docs.scipy.org/doc/scipy/reference/cluster.vq.html}{\texttt{scipy.cluster.vq}} useful (do not implement your own version of $k$-means). Don't forget to draw the resulting clustered bounding boxes on the images!
 
 [Justification for the problem: Researchers should constantly think about valid approaches to solve problems in papers they read apart from the solutions prevented. This question has the dual benefit of introducing $k$-means and causing the student to think about the representation problem. Representing something as simple as a bounding box can be done in many ways. It also requires the student to think about the optimization problem at hand, in terms of norms and objectives. The goal here is not for the student to have to implement $k$-means. Good answers will come up with a sensible vector representation, with coordinates potentially involving the Jaccard similarity (an area-based metric), distance between bounding box centroids, possibly even the confidence scores.]
 
+\bigskip
 
-\end{enumerate}
 
-\probnum{2}
+\FloatBarrier
+\probnum{4}
 
 The task will focus on the segmentation task from \href{http://people.idsia.ch/~juergen/nips2012.pdf}{Ciresan, Giusti, Gambardella, and Schmidhuber}. We use the ISBI $2012$ Challenge Data dataset.
 
@@ -174,29 +201,20 @@ In fact, we had difficulty downloading the data set because the website indicate
 
 [Justification for the problem: It is important to be able to implement metrics given in the paper, and to evaluate them on the data presented in the paper to check figures.]
 
-\end{enumerate}
+\item The task is to apply Canny edge detection to the ISBI $2012$ dataset, and to compare its performance to the neural net implemented in part $4(a)$. 
 
-
-\probnum{3}
-
-This problem is in some ways a continuation of Problem $2$. The task is to first implement and then apply the Canny edge detector to the ISBI $2012$ dataset, and to compare its performance to the neural net implemented in part $2(a)$. We now walk through the implementation of a Canny edge dector in Python.
-
-\begin{enumerate}
-
-\item Implement Gaussian filter. 
-
-\item Implement blahblah. 
-
-\item Compare results to the neural net from Problem $2(a)$ using the metrics in Problem $2(b)$. 
+[Justification for the problem: Very similar to that of Problem $3$.]
 
 \end{enumerate}
 
-\vspace{0.1in}
+
+
+\vspace{0.3in}
 
 \large\textbf{Contributions}
 
-Kiran contributed the code for Problem $1$ and wrote up the document, and also implemented the Canny edge-detection in Problem $3$. 
-Yanchen implemented the code for Problem $2$. We both discussed ideas for the assignments together and agreed on the problems together.
+Kiran contributed the code for Problem $2$ and $3$ and wrote up the document. 
+Yanchen implemented the code for Problems $1$ and $4$. We both discussed ideas for the assignments together and agreed on the problems together.
 
 
 \end{document}
