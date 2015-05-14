@@ -1,3 +1,5 @@
+# This file contains more functions for solving problems 1.2 and 1.3. 
+
 import os
 import sys
 from math import sqrt
@@ -11,8 +13,11 @@ test_dir = "/Users/kiranv/college/3junior-year/spring2015/cos598c/project/test/"
 img_dir = "/Users/kiranv/college/3junior-year/spring2015/cos598c/project/images/"
 new_imgs = "/Users/kiranv/college/3junior-year/spring2015/cos598c/project/mod_images/"
 
+
 def avg(a, b):
 	return (a + b + 0.)/2.
+
+# THE BOX CLASS
 # assume x1 < x2, y1 < y2 - they are diagonals
 class box:
 	def __init__(self, x1, y1, x2, y2, score):
@@ -54,6 +59,7 @@ class box:
 # perhaps there should be a discount based on Jaccard similarity or something..we just use sums a la Overfeat.
 # even though in Overfeat, they might not have been dealing with this exact score. 
 
+# SOME HELPER METHODS FOR ACTIONS ON TWO BOXES.
 # box1 and box2 are boxes
 # take averages of each coordinate
 # new_score is calculated 
@@ -65,8 +71,11 @@ def merge_boxes(box1, box2, new_score):
 	score = new_score
 	return box(x1, y1, x2, y2, score)
 
+
+# PARSING THE OBJECT FILES TO DRAW BOXES ON IMAGES
+
 # returns a dict from class name to list of boxes. 
-# 
+# we apply exp to the score to get everything positive. 
 def gen_boxes(img_name):
 	trd = train_dir + img_name + "/"
 	tst = test_dir + img_name + "/"
@@ -102,11 +111,16 @@ def gen_boxes(img_name):
 					box_dict[class_name].append(box(line[0], line[1], line[2], line[3], exp(line[4])))
 	return box_dict
 
+# A list of office type objects that we particularly consider for the given dataset. 
 office_class_list = ["chair", "books", "wall", "clock", "door", "drawer", "shelves", "screen", "window", "floor", "showcase"]
 office_class_set = set(office_class_list)
+
+# Names of the colors we assign to the objects
 color_names = ["crimson", "deeppink2", "purple", "dodgerblue", "lightsteelblue", "green4", "darkorange", "springgreen4", "yellow", "ivory4", "darkgreen"]
 colors = ["#DC143C", "#EE1289", "#800080", "#1E90FF", "#CAE1FF", "#008B00", "#FF8C00", "#00EE76", "#FFFF00", "#8B8B83", "#006400"]
+# dictionary map from objects to colors for drawing
 color_map = dict(zip(office_class_list, colors))
+# dictionary map from objects to color names for printing out. 
 colorname_map = dict(zip(office_class_list, color_names))
 
 print "Color Map: "
@@ -141,6 +155,7 @@ def draw_boxes(box_dict, img_name, class_set, threshold):
 				if box.score > threshold:
 					classes_shown.add(obj_class)
 					print obj_class + ": " + str(box)
+					# thickness of the lines is dependent on the confidence of the box
 					draw.line((box.x1, box.y1, box.x1, box.y2), fill= color, width=int(box.score*5))
 					draw.line((box.x1, box.y1, box.x2, box.y1), fill= color, width=int(box.score*5))
 					draw.line((box.x2, box.y2, box.x2, box.y1), fill= color, width=int(box.score*5))
@@ -155,11 +170,22 @@ def draw_boxes(box_dict, img_name, class_set, threshold):
 	print classes_shown
 
 
+# generate all pictures redrawn with the appropriate boxes
+# dumps these in the folder "mod_images" - check that to see the results. 
 def boxes_on_pics():
 	for root, dirs, files in os.walk(img_dir):
 		for img in files:
 			img_name = img.split(".jpg")[0]
 			box_dict = gen_boxes(img_name)
+			# here insert a function that transforms box_dict into merged_box_dict (i.e. after merging)
+			draw_boxes(box_dict, img_name, set([]), 0.2)
+
+# takes in a box_dict and for each class, merges object windows together
+# THIS IS THE IMPLEMENTATION OF THE ALGORITHM FOR PART 2
+def merged_box_dict(box_dict):
+	# not implemented
+	return dict()
+
 
 
 
