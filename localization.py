@@ -2,7 +2,6 @@
 
 import os
 import sys
-from math import sqrt
 from math import exp
 from PIL import Image 
 from PIL import ImageDraw
@@ -218,40 +217,66 @@ def apply_kmeans(box_dict, k):
 	# return the new dictionary
 	kmeans_dict = dict()
 	for obj_class in box_dict:
+		print obj_class
 		boxes = box_dict[obj_class]
-		# write a representation for each box as a vector
-		def box_to_vec(box):
-			# list of metrics which we want to reduce the Euclidean distance of:
-			# includes centroid, and each of the individual coordinates of the box,
-			# which are used to recover box coordinates after the k means in vector reprepresentation
-			# are found. To weight the impact of the centroid measure, 
-			# we multiply by 1/area: the centroid matters less as box area increases. 
-			# we also include the coordinates, since distances between them are relevant as well. 
-			# Note that including the original coordinates in the vector allows us to recover the 
-			# original representation of the box. 
-			metrics = [box.centroid(), box.centroid()/box.area(), box.x1, box.y1, box.x2, box.y2]
-			return metrics
-		# we will append the columns together and then take transpose
-		# so that each row is a box with n features (here n = 6)
-		first_col = box_to_vec(boxes[0])
-		box_mat = np.zeros((len(boxes), len(first_col)))
-		first_col = np.array(first_col)
-		for i in range(1, len(boxes)):
-			new_col = np.array(box_to_vec(boxes[i]))
-			box_mat = np.c_[box_mat, new_col]
-		box_mat = box_mat.T
-		# whiten 
-		box_mat = whiten(box_mat)
-		# use k-means
-		codebook, distortion = kmeans(box_mat, k)
-		centroid_boxes = []
-		for i in range(np.shape(codebook)[0]):
-			# we chop off from 2 onwards because these are (box.x1, box.y1, box.x2, box.y2)
-			thebox = 
-			centroid_boxes.append(codebook[i][2:])
-		if obj_class not in kmeans_dict:
-			kmeans_dict[obj_class] = []
-		kmeans_dict[obj_class] = centroids
+		if len(boxes) > k:
+			# write a representation for each proposal box as a vector
+			def box_to_vec(pbox):
+				# list of metrics which we want to reduce the Euclidean distance of:
+				# includes centroid, and each of the individual coordinates of the box,
+				# which are used to recover box coordinates after the k means in vector reprepresentation
+				# are found. To weight the impact of the centroid measure, 
+				# we multiply by 1/area: the centroid matters less as box area increases. 
+				# we also include the coordinates, since distances between them are relevant as well. 
+				# Note that including the original coordinates in the vector allows us to recover the 
+				# original representation of the box. 
+				# we also include the score (scaled down) for the same reason. We scale it down since score-space
+				# should not really affect the distance between boxes (having similar scores is not necessarily a good reason
+				# to combine or not)
+				metrics = [pbox.centroid()[0], pbox.centroid()[1], pbox.centroid()[0]/pbox.area(), pbox.centroid()[1]/pbox.area(), pbox.x1, pbox.y1, pbox.x2, pbox.y2, 0.00001*pbox.score]
+				return metrics
+			# we will append the columns together and then take transpose
+			# so that each row is a box with n features (here n = 9)
+			first_col = box_to_vec(boxes[0])
+			# for rescaling
+			oldx1, oldy1, oldx2, oldy2, oldscore = first_col[4], first_col[5], first_col[6], first_col[7], first_col[8]
+			first_col = np.array(first_col)
+			first_col = first_col.T
+			box_mat = first_col
+			for i in range(1, len(boxes)):
+				new_col = np.array(box_to_vec(boxes[i]))
+				new_col = new_col.T
+				box_mat = np.c_[box_mat, new_col]
+			box_mat = box_mat.T
+			box_mat = box_mat.astype('float')
+			# whiten 
+			box_mat = whiten(box_mat)
+			# need to rescale the coords when we recover the boxes from the representation vectors
+			newx1, newy1, newx2, newy2, newscore = 0, 0, 0, 0, 0
+			if len(np.shape(box_mat)) > 1:
+				newx1, newy1, newx2, newy2, newscore = box_mat[0][4], box_mat[0][5], box_mat[0][6], box_mat[0][7], box_mat[0][8]
+			else:
+				newx1, newy1, newx2, newy2, newscore = box_mat[4], box_mat[5], box_mat[6], box_mat[7], box_mat[8]
+			scalex1, scaley1, scalex2, scaley2, scalescore = oldx1/(0. + newx1), oldy1/(0. + newy1), oldx2/(0. + newx2), oldy2/(0. + newy2), oldscore/(0. + newscore)
+			# use k-means
+			codebook, distortion = kmeans(box_mat, k)
+			centroid_boxes = []
+			for i in range(np.shape(codebook)[0]):
+				# we chop off from 4 onwards because these are (pbox.x1, pbox.y1, pbox.x2, pbox.y2, pbox.score)
+				# this is a direct inverse from box_to_vec
+				# need to multiply these coords by standard deviations across all instances of feature.
+				thebox = box(scalex1*codebook[i][4], scaley1*codebook[i][5], scalex2*codebook[i][6], scaley2*codebook[i][7], scalescore* codebook[i][8])
+				centroid_boxes.append(thebox)
+			print "# of centroids: " + str(len(centroid_boxes))
+			print centroid_boxes[0]
+			print centroid_boxes[1]
+			print centroid_boxes[2]
+			if obj_class not in kmeans_dict:
+				kmeans_dict[obj_class] = []
+			kmeans_dict[obj_class] = centroid_boxes
+		else:
+			kmeans_dict[obj_class] = box_dict[obj_class]
+		print "==================================="
 	return kmeans_dict
 
 
