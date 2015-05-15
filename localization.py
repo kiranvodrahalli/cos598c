@@ -7,6 +7,8 @@ from math import exp
 from PIL import Image 
 from PIL import ImageDraw
 from scipy.cluster.vq import whiten, kmeans
+import numpy as np
+from numpy.linalg import norm
 
 
 train_dir = "/Users/kiranv/college/3junior-year/spring2015/cos598c/project/train/"
@@ -38,7 +40,7 @@ class box:
 				return True
 		return False
 	def centroid(self):
-		return (avg(self.x1, self.x2), avg(self.y1, self.y2))
+		return np.array([avg(self.x1, self.x2), avg(self.y1, self.y2)])
 
 # perhaps there should be a discount based on Jaccard similarity or something..we just use sums a la Overfeat.
 # even though in Overfeat, they might not have been dealing with this exact score. 
@@ -61,7 +63,7 @@ def overlap_score(box1, box2):
 def centroid_dist(box1, box2):
 	c1 = box1.centroid()
 	c2 = box2.centroid()
-	return sqrt((c1[0] - c2[0])**2 + (c1[1] - c2[1])**2)
+	return norm(c1 - c2)
 # box1 and box2 are boxes
 # take averages of each coordinate
 # the new score is the sum is calculated 
@@ -201,16 +203,55 @@ def merged_box_dict(box_dict):
 	#    reduce the list of boxes to the merged boxes using paper's greedy algorithm
 	# return the new merged dictionary
 	merged_dict = dict()
+	for obj_class in box_dict:
+		boxes = box_dict[obj_class]
+		# implement the algorithm from the paper
 	return merged_dict
 
 
 #--------------------------------------------------------------------#
 # this is the implementation of K-means for QUESTION 3
-def apply_kmeans(box_dict):
+# takes in a box_dict and converts it. k is the k in k-means. (k clusters)
+def apply_kmeans(box_dict, k):
 	# for every object class in the box_dict
 	#     reduce the list of boxes to the clustered boxes with kmeans
 	# return the new dictionary
 	kmeans_dict = dict()
+	for obj_class in box_dict:
+		boxes = box_dict[obj_class]
+		# write a representation for each box as a vector
+		def box_to_vec(box):
+			# list of metrics which we want to reduce the Euclidean distance of:
+			# includes centroid, and each of the individual coordinates of the box,
+			# which are used to recover box coordinates after the k means in vector reprepresentation
+			# are found. To weight the impact of the centroid measure, 
+			# we multiply by 1/area: the centroid matters less as box area increases. 
+			# we also include the coordinates, since distances between them are relevant as well. 
+			# Note that including the original coordinates in the vector allows us to recover the 
+			# original representation of the box. 
+			metrics = [box.centroid(), box.centroid()/box.area(), box.x1, box.y1, box.x2, box.y2]
+			return metrics
+		# we will append the columns together and then take transpose
+		# so that each row is a box with n features (here n = 6)
+		first_col = box_to_vec(boxes[0])
+		box_mat = np.zeros((len(boxes), len(first_col)))
+		first_col = np.array(first_col)
+		for i in range(1, len(boxes)):
+			new_col = np.array(box_to_vec(boxes[i]))
+			box_mat = np.c_[box_mat, new_col]
+		box_mat = box_mat.T
+		# whiten 
+		box_mat = whiten(box_mat)
+		# use k-means
+		codebook, distortion = kmeans(box_mat, k)
+		centroid_boxes = []
+		for i in range(np.shape(codebook)[0]):
+			# we chop off from 2 onwards because these are (box.x1, box.y1, box.x2, box.y2)
+			thebox = 
+			centroid_boxes.append(codebook[i][2:])
+		if obj_class not in kmeans_dict:
+			kmeans_dict[obj_class] = []
+		kmeans_dict[obj_class] = centroids
 	return kmeans_dict
 
 

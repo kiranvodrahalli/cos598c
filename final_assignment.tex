@@ -126,11 +126,14 @@ Kiran Vodrahalli and Yanchen Wang
 
 \probnum{1}
 
-In this problem, you will download the Overfeat code and run it on the sample images provided to see how it performs. This is more of a fun task! We encourage you to find your own images and run Overfeat on them. Try to find examples for which Overfeat fails. 
+In this problem, you will download the OverFeat code and run it on the sample images provided to see how it performs. This is more of a fun task! We encourage you to find your own images and run OverFeat on them. Try to find examples for which OverFeat fails. 
 
-The Overfeat code in Python is available here: 
+This link (\href{https://github.com/sermanet/OverFeat/blob/master/README.md}{$\txt{github.com/sermanet/OverFeat/blob/master/README.md}$})
+gives a good installation instruction for OverFeat itself. Then follow the instructions at 
+\href{https://github.com/sermanet/OverFeat/blob/master/API/python/README}{$\txt{github.com/sermanet/OverFeat/blob/master/README.md}$}
+to set up a Python API for OverFeat. Finally, you can readily import and use OverFeat on the sample images given. A simple example about how to use it is located here: 
+\href{https://github.com/sermanet/OverFeat/blob/master/API/python/sample.py}{$\txt{github.com/sermanet/OverFeat/blob/master/API/python/sample.py}$}. 
 
-\href{https://github.com/sermanet/OverFeat/blob/master/API/python/sample.py}{$\txt{https://github.com/sermanet/OverFeat/blob/master/API/python/sample.py}$}. 
 
 \bigskip
 [Justification for the problem: Since the full code is available, you might as well play with it! It is good to get an idea for how it performs on random images anyways.]
@@ -138,7 +141,7 @@ The Overfeat code in Python is available here:
 \bigskip
 \probnum{2}
 
-The goal in this problem will be to explore methods of combining bounding box proposals to classify objects and form predictions about where they are located in a picture. We will be using the Overfeat paper as well as the SUN09 dataset. A set of images from the SUN09 dataset has been provided in your starter code. 
+The goal in this problem will be to explore methods of combining bounding box proposals to classify objects and form predictions about where they are located in a picture. We will be using the OverFeat paper as well as the SUN09 dataset. A set of images from the SUN09 dataset has been provided in your starter code. 
 
 \begin{enumerate}
 
@@ -159,7 +162,7 @@ Then, for each image, plot all bounding box proposals on top of the image for th
 
 [Justification for the problem: Sometimes in research and data analysis, datasets are not provided in a nice format and we have to reformat them. Learning how to use useful tools like Python for this sort of task is a useful skill for any researcher who works with data. The visualization portion of the task is important as well for conceptualizing the task individually.]
 
-\item For each provided image, implement parts $(d)-(g)$ of the greedy merge algorithm for the proposed bounding boxes, as described on pages $10-11$ of the \href{http://arxiv.org/pdf/1312.6229v4.pdf}{Overfeat paper}. You will need to use the bounding box data from both the \texttt{train} and \texttt{test} folders. In the paper, they discuss the scale $s$: ignore this aspect of the algorithm, and assume that the bounding boxes of the same class for each image are all the proposals that exist. Be sure to explain and justify your implementation of \texttt{match$\_$score}, as only the idea of this algorithm is provided in the paper. Also be sure to assign a confidence score to the resulting merged bounding boxes based on the confidences of the individual bound scores (read pg. $11$ closely). Display the merged bounding box for each object class on top of the image as in part $(a)$.
+\item For each provided image, implement parts $(d)-(g)$ of the greedy merge algorithm for the proposed bounding boxes, as described on pages $10-11$ of the \href{http://arxiv.org/pdf/1312.6229v4.pdf}{OverFeat paper}. You will need to use the bounding box data from both the \texttt{train} and \texttt{test} folders. In the paper, they discuss the scale $s$: ignore this aspect of the algorithm, and assume that the bounding boxes of the same class for each image are all the proposals that exist. Be sure to explain and justify your implementation of \texttt{match$\_$score}, as only the idea of this algorithm is provided in the paper. Also be sure to assign a confidence score to the resulting merged bounding boxes based on the confidences of the individual bound scores (read pg. $11$ closely). Display the merged bounding box for each object class on top of the image as in part $(a)$.
 
 [Justification for the problem: It is important to be able to read a paper and implement algorithms from a simple, sometimes incomplete description and evaluate it for yourself. This question is a simple exercise in implementing a simple algorithm where some information was left out, requiring the reader of the paper to think about and fill in the gaps. ]
 
@@ -167,7 +170,7 @@ Then, for each image, plot all bounding box proposals on top of the image for th
 
 \probnum{3}
 
-The task will be to perform an experiment to see how well a common clustering algorithm can distinguish object classes based on bounding boxes. You will apply $k$-means clustering on each object class of bounding boxes for an image as a replacement to the method defined in the Overfeat paper. Think carefully about how to define a vector for each bounding box: recall that $k$-means minimizes distortion, or the sum of the squared Euclidean distances between each bounding box vector and the centroid it is closest to. A na{\"i}ve approach would simply specify each bounding box as a $4$-tuple $(x_1, y_1, x_2, y_2)$. What distance are we trying to minimize between bounding boxes? You might use the approach from part $(b)$ as inspiration. Feel free to choose the number of dimensions in your representation. Give justification for your bounding box representation. You may find the Python module \href{http://docs.scipy.org/doc/scipy/reference/cluster.vq.html}{\texttt{scipy.cluster.vq}} useful (do not implement your own version of $k$-means). Don't forget to draw the resulting clustered bounding boxes on the images!
+The task will be to perform an experiment to see how well a common clustering algorithm can distinguish object classes based on bounding boxes. You will apply $k$-means clustering on each object class of bounding boxes for an image as a replacement to the method defined in the OverFeat paper. Think carefully about how to define a vector for each bounding box: recall that $k$-means minimizes distortion, or the sum of the squared Euclidean distances between each bounding box vector and the centroid it is closest to. A na{\"i}ve approach would simply specify each bounding box as a $4$-tuple $(x_1, y_1, x_2, y_2)$. What distance are we trying to minimize between bounding boxes? You might use the approach from part $(b)$ as inspiration. Feel free to choose the number of dimensions in your representation. Give justification for your bounding box representation. You may find the Python module \href{http://docs.scipy.org/doc/scipy/reference/cluster.vq.html}{\texttt{scipy.cluster.vq}} useful (do not implement your own version of $k$-means). Don't forget to draw the resulting clustered bounding boxes on the images!
 
 [Justification for the problem: Researchers should constantly think about valid approaches to solve problems in papers they read apart from the solutions prevented. This question has the dual benefit of introducing $k$-means and causing the student to think about the representation problem. Representing something as simple as a bounding box can be done in many ways. It also requires the student to think about the optimization problem at hand, in terms of norms and objectives. The goal here is not for the student to have to implement $k$-means. Good answers will come up with a sensible vector representation, with coordinates potentially involving the Jaccard similarity (an area-based metric), distance between bounding box centroids, possibly even the confidence scores.]
 

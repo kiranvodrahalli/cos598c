@@ -14,10 +14,10 @@ MOMENTUM = 0.9
 
 def load_data():
     X_train_raw,t_train_raw,y_train_raw,X_test_raw,t_test_raw,y_test_raw = load.isbi2012(dtype = theano.config.floatX,grayscale = True)
-    X_train_raw = X_train_raw.reshape((X_train_raw.shape[0],1,512,512)) # (30,1,512,512)
-    X_test_raw = X_test_raw.reshape((X_test_raw.shape[0],1,512,512)) # (30,1,512,512)
-    X_train_windows = np.zeros((7864320,1,95,95)) # 30 * 512 * 512 = 7864320 windows of size 95 * 95
-    X_test_windows = np.zeros((7864320,1,95,95)) # 30 * 512 * 512 = 7864320 windows of size 95 * 95
+    X_train_raw = X_train_raw.reshape((X_train_raw.shape[0],1,512,512)) # (30,1,512,512) 30 training images of dimension 512 * 512
+    X_test_raw = X_test_raw.reshape((X_test_raw.shape[0],1,512,512)) # (30,1,512,512) 30 test images of dimension 512 * 512
+    X_train_windows = np.zeros((7864320,1,95,95)) # 30 * 512 * 512 = 7864320 windows of size 95 * 95 as required by network 4
+    X_test_windows = np.zeros((7864320,1,95,95)) # 30 * 512 * 512 = 7864320 windows of size 95 * 95 as required by network 4
     for k in range(30):
         X_train_raw[k,1,:,:] = np.pad(X_train_raw,(47,47),mode = 'reflect') # mirror image at the boundaries
         X_test_raw[k,1,:,:] = np.pad(X_test_raw,(47,47),mode = 'reflect') # mirror image at the boundaries
@@ -25,17 +25,17 @@ def load_data():
             for j in range(48,560):
                 X_train_windows[i*j] = X_train_raw[k,1,i-47:i+47,j-47:j+47]
                 X_test_windows[i*j] = X_test_raw[k,1,i-47:i+47,j-47:j+47]
-    X_valid = X_train_windows[0:2621440] # 10 * 512 * 512 = 2621440 validation
-    X_train_windows = X_train_windows[2621440:] # 5242880 training
-    y_train_raw = y_train_raw.reshape((y_train_raw.shape[0],1,512,512)) # (30,1,512,512)
-    y_train_all = np.zeros(7864320) # each pixel/window has a label
+    X_valid = X_train_windows[0:2621440] # 10 * 512 * 512 = 2621440 10 out of 30 training images for validation
+    X_train_windows = X_train_windows[2621440:] # 5242880 20 out of 30 training images for training
+    y_train_raw = y_train_raw.reshape((y_train_raw.shape[0],1,512,512)) # (30,1,512,512) 30 training label images of dimension 512 * 512
+    y_train_all = np.zeros(7864320) # each pixel/window has a label, flatten label images into an array
     for k in range(30):
         for i in range(512):
             for j in range(512):
                 y_train_all[i*j*k] = y_train_raw[i,1,j,k]
-    y_valid = y_train_all[0:2621440]
+    y_valid = y_train_all[0:2621440] # split into validation and training set as above
     y_train_all = y_train_all[2621440:]
-    X_train = X_train_windows[np.where(y_train_all == 1)] # take all membrane pixels for training
+    X_train = X_train_windows[np.where(y_train_all == 1)] # take all membrane pixels for training, around 50000 pixels per image
     np.append(X_train,X_train_windows[random.sample(np.where(y_train_all == 0),X_train.shape[0])]) # take equal number of nonmembrane pixels
     y_train = y_train_all[np.where(y_train_all == 1)]
     np.append(y_train,np.zeros(X_train.shape[0]-y_train.shape[0]))
@@ -337,6 +337,12 @@ def main(num_epochs=NUM_EPOCHS,batch_size=BATCH_SIZE):
     for b in range(num_batches_test):
         batch_test_pred = iter_funcs['test'](b) 
         total_test_pred = np.append(total_test_pred,batch_test_pred)    
+    
+    # if y_test not available to students, use validation set instead
+    total_valid_pred = [];
+    for b in range(num_batches_valid):
+        batch_valid_pred = iter_funcs['valid'](b) 
+        total_valid_pred = np.append(total_valid_pred,batch_valid_pred) 
 
         
     return dict(
@@ -344,6 +350,7 @@ def main(num_epochs=NUM_EPOCHS,batch_size=BATCH_SIZE):
         total_train_loss=total_train_loss,
         total_valid_loss=total_valid_loss,
         total_valid_accuracy=total_valid_accuracy,
+        total_valid_pred=total_valid_pred,
         total_test_pred=total_test_pred)
         
 
@@ -353,8 +360,14 @@ def main(num_epochs=NUM_EPOCHS,batch_size=BATCH_SIZE):
 #%%
     
 result=main(num_epochs=NUM_EPOCHS);
-test_pred = result['total_test_pred'] # 7864320 binary predictions
+test_pred = result['total_test_pred'] # binary predictions for all training windows
 
 # Assuming test labels are known and stored in the array "y_test", following shows how to calculate pixel error and Rand error
+# If test labels are not available to students, then use validation pixels X_valid and labels y_valid instead
+# pixel error = total proportion of pixels that are wrongly classified
 pixel_err = (np.where((test_pred - y_test) != 0).shape[0]) / (30 * 512 ** 2)
+# Rand error = 1 - rand index/score
+# rank index = (a + b) / (n choose 2)
+# where a = the number of pixels that are in the same segment in test_pred and in the same segment in y_test
+# and b = the number of pixels that are in different segments in test_pred and in different segments in y_test
 rand_err = 1 - adjusted_rand_score(y_test, test_pred)
