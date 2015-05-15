@@ -4,6 +4,12 @@
 import os
 from shutil import copyfile
 
+# this file only works if the full 
+
+
+# needs to be edited for specific training directories etc. -> the files that are submitted
+# already have the reversal implemented in this python file (in the writeup, it is specified
+# that the students need to download the original data themselves, though we provide the specific images)
 train_dir = "/home/knv/train"
 train_dump = "/home/knv/cos598c/train"
 

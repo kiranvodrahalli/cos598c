@@ -1,3 +1,4 @@
+# Solves Problem 4a, 4b
 import matplotlib.pyplot as plt
 import lasagne
 import theano

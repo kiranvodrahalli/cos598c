@@ -10,10 +10,10 @@ import numpy as np
 from numpy.linalg import norm
 
 
-train_dir = "/Users/kiranv/college/3junior-year/spring2015/cos598c/project/train/"
-test_dir = "/Users/kiranv/college/3junior-year/spring2015/cos598c/project/test/"
-img_dir = "/Users/kiranv/college/3junior-year/spring2015/cos598c/project/images/"
-new_imgs = "/Users/kiranv/college/3junior-year/spring2015/cos598c/project/mod_images/"
+train_dir = "/Users/kiranv/college/3junior-year/spring2015/cos598c/project/data/train/"
+test_dir = "/Users/kiranv/college/3junior-year/spring2015/cos598c/project/data/test/"
+img_dir = "/Users/kiranv/college/3junior-year/spring2015/cos598c/project/data/images/"
+new_imgs = "/Users/kiranv/college/3junior-year/spring2015/cos598c/project/results/mod_images/"
 
 
 def avg(a, b):
