@@ -1,3 +1,4 @@
+# Problem 4(c)
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy import ndimage
@@ -5,7 +6,6 @@ from skimage import feature
 from sklearn.metrics import adjusted_rand_score
 
 # Canny edge detection on the training images because only their labels are available
-
 X_train_raw,t_train_raw,y_train_raw,X_test_raw,t_test_raw,y_test_raw = load.isbi2012(dtype = theano.config.floatX,grayscale = True)
 X_train_raw = X_train_raw.reshape((X_train_raw.shape[0],1,512,512)) # (30,1,512,512) 30 training images of dimension 512 * 512
 y_train_raw = y_train_raw.reshape((y_train_raw.shape[0],1,512,512)) # (30,1,512,512) 30 training label images of dimension 512 * 512
