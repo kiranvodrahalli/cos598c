@@ -49,15 +49,22 @@ class box:
 # uses the x1< x2, y1< y2 assumption
 # need to fix this because box2 could be before box1.... move outside of class
 def overlap_area(box1, box2):
-	if box2.x1 > box1.x2 or box2.y1 > box1.y2:
-		return 0.
-	return (self.x2 - box2.x1)*(self.y2 - box2.y1)
-# returns the overlapping box between the two
-def overlap_box(box1, box2):
-	return None
-# returns the overlap score metric # used to merge boxes
-def overlap_score(box1, box2):
-	return 0
+	if box1.x1 <= box2.x1 and box2.x1 <= box1.x2:
+		if box1.y1 <= box2.y1 and box2.y1 <= box1.y2:
+			return (box1.x2 - box2.x1)*(box1.y2 - box2.y1)
+		elif box2.y1 <= box1.y1 and box1.y1 <= box2.y2:
+			return (box1.x2 - box2.x1)*(box2.y2 - box1.y1)
+		else:
+			return 0.
+	elif box2.x1 <= box1.x1 and box1.x1 <= box2.x2:
+		if box1.y1 <= box2.y1 and box2.y1 <= box1.y2:
+			return (box2.x2 - box1.x1)*(box1.y2 - box2.y1)
+		elif box2.y1 <= box1.y1 and box1.y1 <= box2.y2:
+			return (box2.x2 - box1.x1)*(box2.y2 - box1.y1)
+		else:
+			return 0.
+	return 0.
+
 # Euclidean distance between centroids
 def centroid_dist(box1, box2):
 	c1 = box1.centroid()
@@ -197,14 +204,106 @@ def boxes_on_pics(combiner):
 #--------------------------------------------------------------------#
 # takes in a box_dict and for each class, merges object windows together
 # THIS IS THE IMPLEMENTATION OF THE ALGORITHM IN QUESTION 2
-def merged_box_dict(box_dict):
+# threshold limits the number of pairs to search (if there are 100000 proposals, this argmin is intractable)
+# suggests their algorithm is either underspecified or inefficient for general case.
+# t is the stopping threshold for the score: stop when > t. 
+def merged_box_dict(box_dict, thresh, t):
 	# for every object class in the box_dict
 	#    reduce the list of boxes to the merged boxes using paper's greedy algorithm
 	# return the new merged dictionary
+	assert(t > 0)
 	merged_dict = dict()
 	for obj_class in box_dict:
 		boxes = box_dict[obj_class]
+		pair_set = set()
+		count = 0
+		# build set of box pairs that is reasonably sized
+		for i in range(len(boxes)):
+			b1 = boxes[i]
+			for j in range(i+1, len(boxes)):
+				b2 = boxes[j]
+				if count < thresh:
+					pair_set.add((b1, b2))
+					count += 1
 		# implement the algorithm from the paper
+		# what we are trying to minimize
+		def match_score(b1, b2):
+			# as directly specified in the paper
+			return centroid_dist(b1, b2) + overlap_area(b1, b2)
+		score_dict = dict()
+		# we want the minimum (argmin)
+		matchval = float('inf')
+		minpair = None
+		print len(pair_set)
+		# init loop to calculate all scores for pairs one time.
+		for pair in pair_set:
+				if pair not in score_dict:
+					new_score = match_score(pair[0], pair[1])
+					score_dict[pair] = new_score
+					print new_score
+					if new_score < matchval:
+						matchval = new_score
+						minpair = pair
+		print "===================START OF MAIN LOOP======================="
+		# the main loop 
+		while matchval < t and len(pair_set) > 0:
+			print len(pair_set)
+			# merge boxes
+			new_box = merge_boxes(minpair[0], minpair[1])
+			# remove the minimum pair
+			pair_set.remove(minpair)
+			# remove all pairs that contained either of the boxes in the minimum pair
+			rem_list = []
+			# this is actually 2 * the size of the box list, not box list^2 in terms of append operations
+			for pair in pair_set:
+				if pair[0] == minpair[0] or pair[0] == minpair[1]:
+					rem_list.append(pair)
+				if pair[1] == minpair[0] or pair[1] == minpair[1]:
+					rem_list.append(pair)
+			for pair in rem_list:
+				pair_set.remove(pair)
+			# add the merged box and add its scores to the dict
+			# the point is to avoid double looping every time if possible.
+			# we avoid looping over old pairs this way: 2*|box list| instead of |box list|^2.
+			# reset minpair to avoid key errors.. we need the minimum THIS time around.
+			# also reset matchval 
+			matchval = float('inf')
+			minpair = None
+			to_add = []
+			for pair in pair_set:
+				# add the two new pairs for each other box currently in the set
+				newpair1 = (new_box, pair[0])
+				newpair2 = (new_box, pair[1])
+				to_add.append(newpair1)
+				to_add.append(newpair2)
+				# update score_dict with the new_box
+				if newpair1 not in score_dict:
+					new_score = match_score(new_box, pair[0])
+					score_dict[newpair1] = new_score
+					print new_score
+					if new_score < matchval:
+						matchval = new_score
+						minpair = newpair1
+				if newpair2 not in score_dict:
+					new_score = match_score(new_box, pair[1])
+					score_dict[newpair2] = new_score
+					print new_score
+					if new_score < matchval:
+						matchval = new_score
+						minpair = newpair2
+			for pair in to_add:
+				pair_set.add(pair)
+		new_box_set = set()
+		for pair in pair_set:
+			new_box_set.add(pair[0])
+			new_box_set.add(pair[1])
+		# change it into a list
+		boxes_list = []
+		for box in new_box_set:
+			boxes_list.append(box)
+		# updated the merged_dict, now that we have our merged boxes
+		if obj_class not in merged_dict:
+			merged_dict[obj_class] = boxes_list
 	return merged_dict
 
 
